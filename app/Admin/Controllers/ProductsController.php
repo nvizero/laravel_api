@@ -69,6 +69,7 @@ class ProductsController extends AdminController
             $form->text('name', __('名稱'))->rules('min:2');
             $form->text('tags', __('標籤'));
             $form->text('price', __('價錢'));
+            $form->text('category_id', __('分類'));
             $form->selfMakeCkeditor('description', __('簡述'))->options(['lang' => 'fr', 'height' => 100]);
             $form->multipleImage('image', __('圖片'))->move('uploads/images')->removable();
         });
