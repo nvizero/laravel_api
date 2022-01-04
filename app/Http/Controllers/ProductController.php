@@ -96,7 +96,7 @@ class ProductController extends Controller
      * 
      */
     public function productList(Request $request){
-        $products = Product::all();
+        $products = Product::orderBy('id','desc')->get();
         return $products;
     }
 
