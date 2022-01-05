@@ -96,14 +96,35 @@ class ProductController extends Controller
      * 
      */
     public function productList(Request $request){
-        $products = Product::orderBy('id','desc')->get();
-        return $products;
+        $main = 'product';
+        $key = 'list';
+        $expire = 3600;
+        $products = Redis::hget($main , $key);
+        if(!$products){
+            $products = Product::select("id","name","image","price","tags")
+                ->orderBy('id','desc')->take(1)->limit(30)->get()->toArray();
+            $products = serialize($products);
+            Redis::hset($main, $key, $products);
+            Redis::expire($main, $expire);
+        }
+        return unserialize($products);
     }
 
     /**
      * 
      */
-    public function detail(int $id, Request $request){        
-        return Product::find($id);
+    public function detail(int $id, Request $request){
+        $main = 'product';
+        $key = $id;
+        $expire = 3600;
+        $product = Redis::hget($main, $key);
+        if(!$product){
+            $product = Product::find($id);
+            $product = serialize($product);
+            Redis::hset($main,$key,$product);
+            
+            Redis::expire($main,$expire);
+        }
+        return unserialize($product);
     }
 }
