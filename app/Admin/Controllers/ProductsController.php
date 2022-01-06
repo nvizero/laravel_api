@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Product;
+use App\Models\Category;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -57,29 +58,17 @@ class ProductsController extends AdminController
 
     protected function form()
     {
-        $form = new Form(new Product());
-        // $form->textarea('name', __('商品名稱'));
-        // //$form->ckeditor('description')->options(['lang' => 'fr', 'height' => 100]);
-        // $form->selfMakeCkeditor('description');
-
-        // $form->text('price', __('價錢'));
-        // $form->multipleImage('image', __('圖片'))->move('uploads/images')->removable();
-        // 第一列占据1/2的页面宽度
-        $form->column(12, function ($form) {
-            $form->text('name', __('名稱'))->rules('min:2');
-            $form->text('tags', __('標籤'));
-            $form->text('price', __('價錢'));
-            $form->text('category_id', __('分類'));
-            $form->selfMakeCkeditor('description', __('簡述'))->options(['lang' => 'fr', 'height' => 100]);
-            $form->multipleImage('image', __('圖片'))->move('uploads/images')->removable();
-        });
-        // $form->saving(function (Form $form) {
-        //     echo $form->model()->id;
-        //     echo "\n..... ";
-        //     echo $form->model()->price;
-        //     dump($form->price);
-        //     die;
-        // });
+        $form = new Form(new Product());    
+        $categories = Category::get();
+        
+        $form->text('name', __('名稱'))->rules('min:2');
+        $form->text('tags', __('標籤'));
+        $form->text('price', __('價錢'));            
+        $form->select('category_id', '分類')->options($categories->pluck('title','id'))->rules('min:1');
+        $form->selfMakeCkeditor('description', __('簡述'))->options(['lang' => 'fr', 'height' => 100]);
+        $form->multipleImage('image', __('圖片'))->move('uploads/images')->removable();
+        
+        
         return $form;
     }
     /**
