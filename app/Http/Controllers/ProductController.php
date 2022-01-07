@@ -95,17 +95,16 @@ class ProductController extends Controller
     /**
      * 
      */
-    public function productList(Request $request){
-        $main = 'product';
-        $key = 'list';
+    public function productList(Request $request){        
+        $key = 'productslist';
         $expire = 3600;
-        $products = Redis::hget($main , $key);
+        $products = Redis::get( $key);
         if(!$products){
             $products = Product::select("id","name","image","price","tags")
                 ->orderBy('id','desc')->take(1)->limit(30)->get()->toArray();
             $products = serialize($products);
-            Redis::hset($main, $key, $products);
-            Redis::expire($main, $expire);
+            Redis::set($key, $products);
+            Redis::expire($key, $expire);
         }
         return unserialize($products);
     }
@@ -124,7 +123,7 @@ class ProductController extends Controller
             Redis::hset($main,$key,$product);
             
             Redis::expire($main,$expire);
-        }
+         }
         return unserialize($product);
     }
 }
