@@ -113,16 +113,15 @@ class ProductController extends Controller
      * 
      */
     public function detail(int $id, Request $request){
-        $main = 'product';
-        $key = $id;
+        
+        $key = "product:$id";
         $expire = 3600;
-        $product = Redis::hget($main, $key);
+        $product = Redis::get($key);
         if(!$product){
             $product = Product::find($id);
             $product = serialize($product);
-            Redis::hset($main,$key,$product);
-            
-            Redis::expire($main,$expire);
+            Redis::set($key,$product);            
+            Redis::expire($key,$expire);
          }
         return unserialize($product);
     }
