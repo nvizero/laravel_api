@@ -28,7 +28,7 @@ class ProductsController extends AdminController
         $grid = new Grid(new Product());
 
         $grid->column('id', __('Id'));
-        $grid->column('name', __('name123'));        
+        $grid->column('name', __('name9999999asasas'));        
         $grid->column('description',  __('說明'))->display(function ($description) {
             $content = strip_tags($description);
             return mb_substr($content, 0, 20, 'utf-8');
