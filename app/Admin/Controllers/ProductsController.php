@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\CategoryStyle;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -59,12 +60,24 @@ class ProductsController extends AdminController
     {
         $form = new Form(new Product());    
         $categories = Category::get();
-        
+        $categorieStyles = CategoryStyle::get();
         $form->text('name', __('名稱'))->rules('min:2');
         $form->text('tags', __('標籤'));
-        $form->text('price', __('價錢'));            
+        $form->text('price', __('價錢'))->rules('min:2');
+
         $form->select('category_id', '分類')->options($categories->pluck('title','id'))->rules('min:1');
-        $form->selfMakeCkeditor('description', __('簡述'))->options(['lang' => 'fr', 'height' => 100]);
+        // 子表字段
+        // $form->hasMany('stocks', 'size/大小/尺寸', function (Form\NestedForm $form) use ($categorieStyles) {            
+        //     $form->select('category_style_id', 'size/大小/尺寸')->options($categorieStyles->pluck('name','id'))->rules('min:1');            
+        // });
+        $form->table('attrib','size/大小/尺寸-庫存', function ($table) use ($categorieStyles) {
+
+            $table->select('category_style_id', 'size/大小/尺寸')->options($categorieStyles->pluck('name','id'))->rules('min:1');                        
+            $table->text('num','庫存-數量');            
+        });
+        
+        $form->textarea('txt', __('簡述'))->options(['lang' => 'fr', 'height' => 100]);
+        $form->selfMakeCkeditor('description', __('商品說明'))->options(['lang' => 'fr', 'height' => 100]);
         $form->multipleImage('image', __('圖片'))->move('uploads/images')->removable();
         
         
