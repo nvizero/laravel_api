@@ -101,7 +101,7 @@ class ProductController extends Controller
         $products = Redis::get( $key);
         if(!$products){
             $products = Product::select("id","name","image","price","tags")
-                ->orderBy('id','desc')->take(1)->limit(30)->get()->toArray();
+                ->orderBy('id','desc')->take(1)->limit(90)->get()->toArray();
             $products = serialize($products);
             Redis::set($key, $products);
             Redis::expire($key, $expire);
