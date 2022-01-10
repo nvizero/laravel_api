@@ -27,7 +27,7 @@ class ProductsController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Product());
-
+        $grid->model()->orderBy('id', 'desc');
         $grid->column('id', __('Id'));
         $grid->column('name', __('商品名稱'));        
         $grid->column('description',  __('說明'))->display(function ($description) {
