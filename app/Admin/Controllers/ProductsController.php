@@ -75,7 +75,7 @@ class ProductsController extends AdminController
             $table->text('style', '顏色/型號');
             $table->text('num','庫存-數量');
             $table->text('price','價格');
-            $table->multipleImage('image', __('圖片'))->move('uploads/images')->removable();
+            $table->image('image', __('圖片'))->removable();
         });
 
         $form->table('other_price','其他價格/團購價', function ($table) {                
