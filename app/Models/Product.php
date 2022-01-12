@@ -9,7 +9,7 @@ class Product extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name', 'price', 'description', 'image','txt','attrib'
+        'name', 'price', 'description', 'image','txt','attrib','other_price'
     ];
 
     public function setImageAttribute($image)
@@ -40,5 +40,15 @@ class Product extends Model
     public function setAttribAttribute($value)
     {
         $this->attributes['attrib'] = json_encode(array_values($value));
+    }
+
+    public function getOtherPriceAttribute($value)
+    {
+        return array_values(json_decode($value, true) ?: []);
+    }
+
+    public function setOtherPriceAttribute($value)
+    {
+        $this->attributes['other_price'] = json_encode(array_values($value));
     }
 }

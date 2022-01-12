@@ -71,9 +71,15 @@ class ProductsController extends AdminController
         //     $form->select('category_style_id', 'size/大小/尺寸')->options($categorieStyles->pluck('name','id'))->rules('min:1');            
         // });
         $form->table('attrib','size/大小/尺寸-庫存', function ($table) use ($categorieStyles) {
-
             $table->select('category_style_id', 'size/大小/尺寸')->options($categorieStyles->pluck('name','id'))->rules('min:1');                        
-            $table->text('num','庫存-數量');            
+            $table->text('num','庫存-數量');
+            $table->text('price','價格');
+            $table->multipleImage('image', __('圖片'))->move('uploads/images')->removable();
+        });
+
+        $form->table('other_price','其他價格/團購價', function ($table) {                
+            $table->text('price','團購價');
+            $table->text('num','數量');
         });
         
         $form->textarea('txt', __('簡述'))->options(['lang' => 'fr', 'height' => 100]);
