@@ -9,7 +9,8 @@ class Product extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name', 'price', 'description', 'image','txt','attrib','other_price'
+        'name', 'price', 'description', 'image','txt','attrib','other_price',
+        'status','start_time','end_time'
     ];
 
     public function setImageAttribute($image)
@@ -31,6 +32,15 @@ class Product extends Model
     {
         return $this->hasMany('App\Models\ProductStocks');
     }
+
+    /**
+    * 多層次分類
+    */
+    public function attributes()
+    {
+        return $this->hasMany('App\Models\ProductAttributes');
+    }
+    // attributes
 
     public function getAttribAttribute($value)
     {

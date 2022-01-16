@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/v1/images', "TincyController@updateImage");
 Route::get('/v1/productList', "ProductController@productList");
 Route::get('/v1/product/{id}', "ProductController@detail");
+Route::get('/v1/context/{slogan}', "Api\ContextController@detail");
 
 Route::group([
                 'middleware' => 'api',

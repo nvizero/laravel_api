@@ -10,6 +10,7 @@
     "require": {
         "php": "^7.3|^8.0",
         "ckfinder/ckfinder-laravel-package": "v3.5.2.1",
+        "doctrine/dbal": "^3.2",
         "encore/laravel-admin": "^1.8.10",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
