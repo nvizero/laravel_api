@@ -32,4 +32,14 @@ Route::group([
     Route::post('login', 'AuthController@login');
     Route::post('logout', 'AuthController@logout');
     Route::post('register', 'AuthController@register');
+
+    Route::post('orders', 'OrderController@orderProduct');
+});
+
+Route::group([
+                'middleware' => 'api',
+                'prefix' => 'order'
+            ], 
+            function () {    
+    Route::post('product', 'Api\OrderController@orderProduct');
 });
