@@ -63,12 +63,10 @@ class ProductsController extends AdminController
         $form = new Form(new Product());    
         $categories = Category::get();
         $categorieStyles = CategoryStyle::get();
-        $form->text('name', __('名稱'))->rules('min:2');
-        //$form->text('tags', __('標籤'))->rules('min:2');
-        //$form->multipleSelect('tags',__('標籤'))->options($categories->pluck('title','id'));
+        $form->text('name', __('名稱'))->rules('min:2');        
         $form->multipleSelect('tags',__('標籤'))->options($categories->pluck('title','title'));
         $form->text('price', __('價錢'))->rules('min:2');
-
+        $form->text('taiwan_price', __('台灣價錢'))->rules('min:2');        
         $form->select('category_id', '分類')->options($categories->pluck('title','id'))->rules('min:1');
         
         $form->radio('status','上架')->options([1 => '上架', 2 => '下架'])->default('1');
@@ -76,10 +74,7 @@ class ProductsController extends AdminController
             $form->time('start_time','開始時間')->format('YYYY-MM-DD');
             $form->time('end_time','開始時間')->format('YYYY-MM-DD');
         // });
-        // 子表字段
-
-         
-
+        // 子表字段        
         $form->table('other_price','團購達標量', function ($table) use ($categorieStyles) {
             $table->text('num','數量');
             $table->text('price','價格');            

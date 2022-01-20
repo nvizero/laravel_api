@@ -119,10 +119,13 @@ class ProductController extends Controller
         $product = Redis::get($key);
         if(!$product){
             $product = Product::find($id);
-            $product = serialize($product);
-            Redis::set($key,$product);            
+            $product = serialize([
+                                    'attrib'=> $product->attributes,
+                                    'content'=>$product
+                                ]);        
+            Redis::set($key,$product);
             Redis::expire($key,$expire);
-         }
-        return unserialize($product);
+        }
+        return $product;
     }
 }
