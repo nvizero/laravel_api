@@ -64,9 +64,9 @@ class ProductsController extends AdminController
         $categories = Category::get();
         $categorieStyles = CategoryStyle::get();
         $form->text('name', __('名稱'))->rules('min:2');
-        $form->text('tags', __('標籤'))->rules('min:2');
-        // $form->multipleSelect('tags',__('標籤'))->options($categories->pluck('title','id'));
-        // $form->multipleSelect('tags',__('標籤'))->options($categories->pluck('title','title'));
+        //$form->text('tags', __('標籤'))->rules('min:2');
+        //$form->multipleSelect('tags',__('標籤'))->options($categories->pluck('title','id'));
+        $form->multipleSelect('tags',__('標籤'))->options($categories->pluck('title','title'));
         $form->text('price', __('價錢'))->rules('min:2');
 
         $form->select('category_id', '分類')->options($categories->pluck('title','id'))->rules('min:1');

@@ -13,6 +13,14 @@ class Product extends Model
         'status','start_time','end_time'
     ];
 
+    public function setTagsAttribute($tags) {        
+        $this->attributes['tags'] = implode(',', $tags);
+    }
+
+    public function getTagsAttribute($tags) {
+        return explode(',', $tags);
+    }
+
     public function setImageAttribute($image)
     {
         if (is_array($image)) {
