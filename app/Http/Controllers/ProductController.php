@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
   
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Context;
 use Illuminate\Support\Facades\Redis;
 class ProductController extends Controller
 {
@@ -112,20 +113,33 @@ class ProductController extends Controller
     /**
      * 
      */
-    public function detail(int $id, Request $request){
-        
+    public function detail(int $id, Request $request){        
         $key = "product:$id";
         $expire = 3600;
         $product = Redis::get($key);
         if(!$product){
             $product = Product::find($id);
             $product = serialize([
-                                    'attrib'=> $product->attributes,
-                                    'content'=>$product
+                                    'attrib'    => $product->attributes,
+                                    'product'   =>$product,
+                                    'buyToKnow'=>self::getBuyToKnow()
                                 ]);        
             Redis::set($key,$product);
             Redis::expire($key,$expire);
         }
-        return $product;
+        return unserialize($product);
+    }
+
+    public function getBuyToKnow(){
+        $key = "buyToKnow";
+        $expire = 3600;
+        $context = Redis::get($key);
+        if(!$context){
+            $context = Context::where('short','buy-to-know')->first();
+            $context = serialize($context);        
+            Redis::set($key,$context);
+            Redis::expire($key,$expire);
+        }
+        return unserialize($context);   
     }
 }
