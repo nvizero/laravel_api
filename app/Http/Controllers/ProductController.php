@@ -113,7 +113,17 @@ class ProductController extends Controller
     /**
      * 
      */
-    public function detail(int $id, Request $request){        
+    public function detail(int $id, Request $request){                
+        return [
+            'result' =>self::productDetail($id),
+            'buyToKnow'=>self::getBuyToKnow()
+        ];
+    }
+
+    /**
+     * 
+     */
+    public function productDetail(int $id){        
         $key = "product:$id";
         $expire = 3600;
         $product = Redis::get($key);
@@ -121,8 +131,7 @@ class ProductController extends Controller
             $product = Product::find($id);
             $product = serialize([
                                     'attrib'    => $product->attributes,
-                                    'product'   =>$product,
-                                    'buyToKnow'=>self::getBuyToKnow()
+                                    'product'   => $product,                                    
                                 ]);        
             Redis::set($key,$product);
             Redis::expire($key,$expire);
