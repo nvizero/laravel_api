@@ -10,7 +10,7 @@ class Product extends Model
     use HasFactory;
     protected $fillable = [
         'name', 'price', 'description', 'image','txt','attrib','other_price',
-        'status','start_time','end_time'
+        'status','start_time','end_time','little'
     ];
 
     public function setTagsAttribute($tags) {        

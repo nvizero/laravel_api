@@ -63,7 +63,8 @@ class ProductsController extends AdminController
         $form = new Form(new Product());    
         $categories = Category::get();
         $categorieStyles = CategoryStyle::get();
-        $form->text('name', __('名稱'))->rules('min:2');        
+        $form->text('name', __('名稱'))->rules('min:2');
+        $form->text('little', __('下方小標題'))->rules('min:2');
         $form->multipleSelect('tags',__('標籤'))->options($categories->pluck('title','title'));
         $form->text('price', __('價錢'))->rules('min:2');
         $form->text('taiwan_price', __('台灣價錢'))->rules('min:2');        

@@ -12,7 +12,7 @@ class Category extends Model
     protected $table = 'category';
 
     protected $fillable = [
-        'title', 'parent_id'
+        'title', 'parent_id','is_show','sort'
     ];
     /**
      * 多層次分類

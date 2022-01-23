@@ -123,7 +123,7 @@ class ProductController extends Controller
     /**
      * 
      */
-    public function productDetail(int $id){        
+    public function productDetail(int $id){
         $key = "product:$id";
         $expire = 3600;
         $product = Redis::get($key);
