@@ -9,6 +9,8 @@ use Validator;
 
 class AuthController extends Controller
 {
+    public $_SUCCESS = 1;
+    public $_FAIL = 1;
     public function __construct()
     {
         $this->middleware('auth:api')->except(['login', 'register']);        
@@ -19,10 +21,10 @@ class AuthController extends Controller
         $credentials = request(['email', 'password']);
 
         if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['status' => 1, 'message' => 'invalid credentials'], 401);
+            return response()->json(['status' => $this->_FAIL, 'message' => 'invalid credentials'], 401);
         }
 
-        return response()->json(['status' => 0, 'token' => $token]);
+        return response()->json(['status' => $this->_SUCCESS, 'token' => $token]);
     }
 
     public function me()
@@ -33,7 +35,7 @@ class AuthController extends Controller
     public function logout()
     {
         auth()->logout();
-        return response()->json(['status' => 0]);
+        return response()->json(['status' => $this->_SUCCESS]);
     }
 
     /**
@@ -55,8 +57,9 @@ class AuthController extends Controller
                     ['password' => bcrypt($request->password)]
                 ));
         return response()->json([
-            'message' => 'User successfully registered',
-            'user' => $user
+            'message'   =>  'User successfully registered',
+            'user'      =>  $user,
+            'status'    =>  $this->_SUCCESS,            
         ], 201);
     }
 }
