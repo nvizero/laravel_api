@@ -97,12 +97,16 @@ class ProductController extends Controller
      * 
      */
     public function productList(Request $request){        
-        $key = 'productslist';
+        $limit = $request->limit ? $request->limit : 20;
+        $page = $request->page && $request->page > 0 ? $request->page : 1;
+        $skip = ($page - 1) * $limit;
+        $key  = 'productslist:'."$page:$limit}";
         $expire = 3600;
         $products = Redis::get( $key);
         if(!$products){
             $products = Product::select("id","name","image","price","tags" ,'txt')
-                ->orderBy('id','desc')->take(1)->limit(90)->get()->toArray();
+                ->orderBy('id','desc')->limit($limit)->paginate($limit);
+            $products->setPath('');
             $products = serialize($products);
             Redis::set($key, $products);
             Redis::expire($key, $expire);

@@ -10,7 +10,7 @@ use Validator;
 class AuthController extends Controller
 {
     public $_SUCCESS = 1;
-    public $_FAIL = 1;
+    public $_FAIL = 0;
     public function __construct()
     {
         $this->middleware('auth:api')->except(['login', 'register']);        
