@@ -100,7 +100,7 @@ class ProductController extends Controller
         $limit = $request->limit ? $request->limit : 9;
         $page = $request->page && $request->page > 0 ? $request->page : 1;
         $skip = ($page - 1) * $limit;
-        $key  = 'productslist:'."$page:$limit}";
+        $key  = 'productslist:'."$page:$limit";
         $expire = 3600;
         $products = Redis::get( $key);
         if(!$products){
