@@ -97,7 +97,7 @@ class ProductController extends Controller
      * 
      */
     public function productList(Request $request){        
-        $limit = $request->limit ? $request->limit : 20;
+        $limit = $request->limit ? $request->limit : 9;
         $page = $request->page && $request->page > 0 ? $request->page : 1;
         $skip = ($page - 1) * $limit;
         $key  = 'productslist:'."$page:$limit}";
