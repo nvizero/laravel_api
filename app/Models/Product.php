@@ -48,6 +48,21 @@ class Product extends Model
     {
         return $this->hasMany('App\Models\ProductAttributes');
     }
+    /**
+    * 產品屬性
+    */
+    public function categoryStyle()
+    {
+        return $this->hasManyThrough(
+            'App\Models\ProductCategoryStyle',
+            'App\Models\CategoryStyle',                     
+            'category_id',
+            'product_id',
+            'id',
+            'id',
+
+        );
+    }
     // attributes
 
     public function getAttribAttribute($value)

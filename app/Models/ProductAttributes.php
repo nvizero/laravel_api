@@ -20,5 +20,13 @@ class ProductAttributes extends Model
         return $this->belongsTo('App\Models\Product');
     }
 
+    /**
+     * 
+     */
+    public function categoryStyle()
+    {
+        return $this->hasMany('App\Models\ProductCategoryStyle');
+    }
+
     
 }

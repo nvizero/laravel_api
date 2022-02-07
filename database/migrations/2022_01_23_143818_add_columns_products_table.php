@@ -26,6 +26,8 @@ class AddColumnsProductsTable extends Migration
      */
     public function down()
     {
-        $table->dropColumn('little');
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropColumn('little');
+        });
     }
 }

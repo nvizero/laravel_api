@@ -6,7 +6,8 @@ use App\Models\Product;
 use App\Models\ProductCategoryStyle;
 use App\Models\ProductAttributes;
 use App\Models\Category;
-use App\Models\CategoryStyle;
+use App\Models\CategoryStyle1;
+use App\Models\CategoryStyle2;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -62,7 +63,8 @@ class ProductsController extends AdminController
     {
         $form = new Form(new Product());    
         $categories = Category::get();
-        $categorieStyles = CategoryStyle::get();
+        $categorieStyles1 = CategoryStyle1::get();
+        $categorieStyles2 = CategoryStyle2::get();
         $form->text('name', __('名稱'))->rules('min:2');
         $form->text('little', __('下方小標題'))->rules('min:2');
         $form->multipleSelect('tags',__('標籤'))->options($categories->pluck('title','title'));
@@ -76,14 +78,13 @@ class ProductsController extends AdminController
             $form->time('end_time','開始時間')->format('YYYY-MM-DD');
         // });
         // 子表字段        
-        $form->table('other_price','團購達標量', function ($table) use ($categorieStyles) {
+        $form->table('other_price','團購達標量', function ($table)     {
             $table->text('num','數量');
             $table->text('price','價格');            
             $table->text('content','備註');
         });
 
         $form->hasMany('attributes', 'size/大小/尺寸', function (Form\NestedForm $f) {
-
             $f->text('style1', 'size/大小/尺寸');
             $f->text('style2', '顏色/型號');
             $f->text('num','庫存-數量');
@@ -119,11 +120,11 @@ class ProductsController extends AdminController
             //再做關聯
             if(!empty($row['style1'])){
                 $exStyle1 = explode('#',$row['style1']);                
-                $this->updateProductCateStyle($exStyle1 , $form);                
+                $this->updateProductCateStyle($exStyle1 , $form ,1);                
             }
             if(!empty($row['style2'])){
                 $exStyle2 = explode('#',$row['style2']);
-                $this->updateProductCateStyle($exStyle2 , $form);
+                $this->updateProductCateStyle($exStyle2 , $form ,2);
             }
         }
     }
@@ -131,18 +132,24 @@ class ProductsController extends AdminController
     /**
      * 整理產品型號/尺寸/大小/寫入到DB
      */
-    public function updateProductCateStyle($datas , $form){
+    public function updateProductCateStyle($datas , $form , $type){
         foreach($datas as $key => $str){
             if(!empty($str)){
+                if( $type == 1 ){
+                    $categoryStyle = new CategoryStyle1();
+                }else{
+                    $categoryStyle = new CategoryStyle2();
+                }                
                 $categoryStyleData = ['name'=> $str, 'category_id'=>$form->category_id];
-                $cateEntity = CategoryStyle::where($categoryStyleData)->first();
+                $cateEntity = $categoryStyle->where($categoryStyleData)->first();
                 if(!$cateEntity){                            
-                    $cateEntity = CategoryStyle::create($categoryStyleData);
+                    $cateEntity = $categoryStyle->create($categoryStyleData);
                 }
                 $insertProCateStyleData = [
                     'category_id' => $form->category_id,
                     'product_id'  => $form->model()->id,
-                    'category_style_id' => $cateEntity->id
+                    'category_styles_id' => $cateEntity->id,
+                    'type' => $type
                 ];
                 $prodCateStyleEntity = ProductCategoryStyle::where($insertProCateStyleData)->first();
                 if(!$prodCateStyleEntity){

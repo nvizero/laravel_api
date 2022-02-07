@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
   
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\ProductAttributes;
+use App\Models\ProductCategoryStyle;
 use App\Models\Context;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 class ProductController extends Controller
 {
@@ -127,20 +130,42 @@ class ProductController extends Controller
     /**
      * 
      */
-    public function productDetail(int $id){
+    public function productDetail(int $id){        
         $key = "product:$id";
         $expire = 3600;
         $product = Redis::get($key);
-        if(!$product){
-            $product = Product::find($id);
+        if($product){
+            $product = Product::select("id",'name','description','image','price','tags')->find($id);
             $product = serialize([
-                                    'attrib'    => $product->attributes,
+                                    'attrib'    => $this->getProductAttrib($id), 
                                     'product'   => $product,                                    
                                 ]);        
             Redis::set($key,$product);
             Redis::expire($key,$expire);
         }
         return unserialize($product);
+    }
+    /**
+     * 取出產品型號
+     */
+    public function getProductAttrib(int $product_id){
+        $productAttributes = ProductAttributes::select('style2','style1')
+                            ->where('product_id',$product_id)->get();
+        $result = [];                    
+        foreach([1=>'category_styles1',2=>'category_styles2'] as $key => $row){            
+            $res = DB::table('product_category_style')
+                ->select( "{$row}.name", "{$row}.id as category_style{$key}_id")
+                ->join("{$row}",'product_category_style.category_styles_id', '=', "{$row}.id")
+                ->where([
+                    'product_category_style.product_id' => $product_id,
+                    'product_category_style.type' => $key
+                        ])
+                ->get();
+            $result[$row] = $res;    
+        }                    
+        
+
+        return [$productAttributes,$result];
     }
 
     public function getBuyToKnow(){

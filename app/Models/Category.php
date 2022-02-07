@@ -21,4 +21,14 @@ class Category extends Model
     {
         return $this->hasMany('App\Models\Category', 'parent_id', 'id');
     }
+
+    public function style1()
+    {
+        return $this->hasMany('App\Models\CategoryStyle1', 'category_id', 'id');
+    }
+
+    public function style2()
+    {
+        return $this->hasMany('App\Models\CategoryStyle2', 'category_id', 'id');
+    }
 }

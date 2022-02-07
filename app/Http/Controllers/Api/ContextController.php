@@ -26,7 +26,10 @@ class ContextController extends Controller
          }
         return $content;
     }
-
+    /**
+     * classOutSide: "card-heading active",
+       classInSide: "collapse show",
+     */
     public function menus(Request $request){
         
         $key = "{$this->menusKey}";
@@ -34,12 +37,17 @@ class ContextController extends Controller
         $content = Redis::get($key);
         if(!$content){
             $content = Category::select("title",'sort')->where('is_show',1)->orderBy('sort','desc')->get();
-            $content[]=["title"=>"所有","sort"=> 99];            
+            $content[]=[
+                    "title"=>"所有",
+                    "sort"=> 99,
+                    "classOutSide"=> "card-heading",
+                    "classInSide" => "collapse show",
+                ];
             $content = json_encode($content);
             $content = json_decode($content,true);
             $content = array_reverse($content);
             $content = json_encode($content);
-            Redis::set($key,$content);        
+            Redis::set($key,$content);
             //title: "所有",    
             Redis::expire($key,$expire);
         }
