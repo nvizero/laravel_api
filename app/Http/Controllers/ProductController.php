@@ -134,7 +134,7 @@ class ProductController extends Controller
         $key = "product:$id";
         $expire = 3600;
         $product = Redis::get($key);
-        if($product){
+        if(!$product){
             $product = Product::select("id",'name','description','image','price','tags')->find($id);
             $product = serialize([
                                     'attrib'    => $this->getProductAttrib($id), 
