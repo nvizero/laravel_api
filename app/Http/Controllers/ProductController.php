@@ -134,7 +134,7 @@ class ProductController extends Controller
         $key = "product:$id";
         $expire = 3600;
         $product = Redis::get($key);
-        if(!$product){
+        if(1){
             $product = Product::select("id",'name','description','image','price','tags')->find($id);
             $product = serialize([
                                     'attrib'    => $this->getProductAttrib($id), 
@@ -152,7 +152,8 @@ class ProductController extends Controller
         $productAttributes = ProductAttributes::select('style2','style1')
                             ->where('product_id',$product_id)->get();
         $result = [];                    
-        foreach([1=>'category_styles1',2=>'category_styles2'] as $key => $row){            
+        foreach([2=>'category_styles2',1=>'category_styles1'] as $key => $row){
+
             $res = DB::table('product_category_style')
                 ->select( "{$row}.name", "{$row}.id as category_style{$key}_id")
                 ->join("{$row}",'product_category_style.category_styles_id', '=', "{$row}.id")
@@ -161,11 +162,10 @@ class ProductController extends Controller
                     'product_category_style.type' => $key
                         ])
                 ->get();
-            $result[$row] = $res;    
-        }                    
+            $result[] = $res;    
+        }
         
-
-        return [$productAttributes,$result];
+        return $result;
     }
 
     public function getBuyToKnow(){
