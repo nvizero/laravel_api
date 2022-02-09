@@ -95,11 +95,26 @@ class ProductController extends Controller
     public function atest(Request $request){
         return view('atest');
     }
+    /**
+     * siteMap 用 哇出全部的ID 
+     */
+    public function allProducts(Request $request){        
+        $key  = 'allProducts';
+        $expire = 3600;
+        $products = Redis::get($key);
+        if(!$products){
+            $products = Product::select("id",'name')->get();            
+            $products = serialize($products);
+            Redis::set($key, $products);
+            Redis::expire($key, $expire);
+        }
+        return unserialize($products);
+    }
 
     /**
      * 
      */
-    public function productList(Request $request){        
+    public function productList(Request $request){
         $limit = $request->limit ? $request->limit : 9;
         $page = $request->page && $request->page > 0 ? $request->page : 1;
         $skip = ($page - 1) * $limit;

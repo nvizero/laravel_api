@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // api/v1/images
 Route::post('/v1/images', "TincyController@updateImage");
 Route::get('/v1/productList', "ProductController@productList");
+Route::get('/v1/allProducts', "ProductController@allProducts");
 Route::get('/v1/product/{id}', "ProductController@detail");
 Route::get('/v1/context/{slogan}', "Api\ContextController@detail");
 Route::get('/v1/menus', "Api\ContextController@menus");
