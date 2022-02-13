@@ -149,7 +149,7 @@ class ProductController extends Controller
         $key = "product:$id";
         $expire = 3600;
         $product = Redis::get($key);
-        if(1){
+        if(!$product){
             $product = Product::select("id",'name','description','image','price','tags')->find($id);
             $product = serialize([
                                     'attrib'    => $this->getProductAttrib($id), 
@@ -170,7 +170,7 @@ class ProductController extends Controller
         foreach([2=>'category_styles2',1=>'category_styles1'] as $key => $row){
 
             $res = DB::table('product_category_style')
-                ->select( "{$row}.name", "{$row}.id as category_style{$key}_id")
+                ->select( "{$row}.name", "{$row}.id")
                 ->join("{$row}",'product_category_style.category_styles_id', '=', "{$row}.id")
                 ->where([
                     'product_category_style.product_id' => $product_id,
