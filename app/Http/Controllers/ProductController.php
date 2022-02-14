@@ -149,12 +149,13 @@ class ProductController extends Controller
         $key = "product:$id";
         $expire = 3600;
         $product = Redis::get($key);
-        if(!$product){
-            $product = Product::select("id",'name','description','image','price','tags')->find($id);
+        if(!$product){        
+            $product = Product::select("id",'name','txt','description','image','price','tags')->find($id);
             $product = serialize([
                                     'attrib'    => $this->getProductAttrib($id), 
-                                    'product'   => $product,                                    
-                                ]);        
+                                    'product'   => $product,
+                                    'txt'       => strip_tags($product->txt),
+                                ]);
             Redis::set($key,$product);
             Redis::expire($key,$expire);
         }
@@ -166,20 +167,42 @@ class ProductController extends Controller
     public function getProductAttrib(int $product_id){
         $productAttributes = ProductAttributes::select('style2','style1')
                             ->where('product_id',$product_id)->get();
-        $result = [];                    
+                            
+        $result=[];
         foreach([2=>'category_styles2',1=>'category_styles1'] as $key => $row){
-
-            $res = DB::table('product_category_style')
-                ->select( "{$row}.name", "{$row}.id")
-                ->join("{$row}",'product_category_style.category_styles_id', '=', "{$row}.id")
-                ->where([
-                    'product_category_style.product_id' => $product_id,
-                    'product_category_style.type' => $key
-                        ])
-                ->get();
-            $result[] = $res;    
-        }
-        
+            if($key==2  ){                
+                $res = DB::table('product_attributes')
+                        ->select(  'id',"style1", "style2")                    
+                        ->where('product_id', $product_id )
+                        ->get();
+                $empty = [];        
+                foreach($res as $row){
+                    $strs = explode('#',$row->style1);                    
+                    $category_styles  = DB::table('category_styles1')
+                            ->select(  "id", 'category_id',"name")                    
+                            ->whereIn('name',$strs )
+                            ->get();
+                    $empty[] = 
+                                [
+                                    'id'=> $row->id ,
+                                    'name' => $row->style2,
+                                    'style'=>$category_styles,
+                                    
+                                ];    
+                }
+                $result[] = $empty;
+            }else{
+                $res = DB::table('product_category_style')
+                    ->select( "{$row}.name", "{$row}.id")
+                    ->join("{$row}",'product_category_style.category_styles_id', '=', "{$row}.id")
+                    ->where([
+                        'product_category_style.product_id' => $product_id,
+                        'product_category_style.type' => $key
+                            ])
+                    ->get();
+                $result[] = $res;
+            }            
+        }        
         return $result;
     }
 
