@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Product;
+use App\Models\Brand;
 use App\Models\ProductCategoryStyle;
 use App\Models\ProductAttributes;
 use App\Models\Category;
@@ -37,6 +38,11 @@ class ProductsController extends AdminController
             $content = strip_tags($description);
             return mb_substr($content, 0, 20, 'utf-8');
         });
+        $grid->filter(function($filter){            
+            $filter->disableIdFilter();            
+            $filter->like('name', '商品名稱');
+            $filter->like('description', '商品說明');            
+        });
         return $grid;
     }
 
@@ -63,6 +69,7 @@ class ProductsController extends AdminController
     {
         $form = new Form(new Product());    
         $categories = Category::get();
+        $brands = Brand::get();
         $categorieStyles1 = CategoryStyle1::get();
         $categorieStyles2 = CategoryStyle2::get();
         $form->text('name', __('名稱'))->rules('min:2');
@@ -71,7 +78,10 @@ class ProductsController extends AdminController
         $form->text('price', __('價錢'))->rules('min:2');
         $form->text('taiwan_price', __('台灣價錢'))->rules('min:2');        
         $form->select('category_id', '分類')->options($categories->pluck('title','id'))->rules('min:1');
-        
+
+        $form->select('brand','品牌')->options($brands->pluck('title','title'));
+        $form->image('avatar', '列表圖片')->move('uploads/images')->removable();
+
         $form->radio('status','上架')->options([1 => '上架', 2 => '下架'])->default('1');
         // $form->column(1/2, function ($form) {
             $form->time('start_time','開始時間')->format('YYYY-MM-DD');
