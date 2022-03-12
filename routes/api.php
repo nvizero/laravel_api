@@ -44,4 +44,6 @@ Route::group([
             ], 
             function () {    
     Route::post('product', 'Api\OrderController@orderProduct');
+    Route::post('addToCart', 'Api\OrderController@addToCart');
+     
 });

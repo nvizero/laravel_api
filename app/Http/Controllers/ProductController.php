@@ -175,7 +175,7 @@ class ProductController extends Controller
                         ->select(  'id',"style1", "style2")                    
                         ->where('product_id', $product_id )
                         ->get();
-                $empty = [];        
+                $empty = [];
                 foreach($res as $row){
                     $strs = explode('#',$row->style1);                    
                     $category_styles  = DB::table('category_styles1')
@@ -187,7 +187,6 @@ class ProductController extends Controller
                                     'id'=> $row->id ,
                                     'name' => $row->style2,
                                     'style'=>$category_styles,
-                                    
                                 ];    
                 }
                 $result[] = $empty;
