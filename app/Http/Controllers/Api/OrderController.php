@@ -14,7 +14,7 @@ use App\Models\Product;
 class OrderController extends Controller
 {   
     public $mainKey =   'orders';
-
+    public $expire  = 3600;
     public function __construct()
     {
         $this->middleware('auth:api');        
@@ -77,11 +77,13 @@ class OrderController extends Controller
         }
                 
         Redis::set($user_key , json_encode($cart) );
+        Redis::expire($user_key,$this->expire);
         return response()->json(
         	[	        		
         		'msg' => 'success Product added to cart successfully!', 
         		'state' => 1,
-        		'cart' => $cart
+        		'cart' => $cart,
+        		'count' => count($cart[$user_id][$product_id])
         	]
         );        
     }
@@ -143,5 +145,16 @@ class OrderController extends Controller
 	        $orderDetail->save();
 	    }
     	        
+    }
+
+    /**
+     * 產品細項
+     * */    
+    public function getCart(Request $request){
+    	$user_id = $request->user_id;
+		$user_key = "cart:$user_id";
+        
+		$cart = Redis::get($user_key);
+    	return $cart;     	   
     }
 }
