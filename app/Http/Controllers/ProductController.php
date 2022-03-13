@@ -7,6 +7,9 @@ use App\Models\Product;
 use App\Models\ProductAttributes;
 use App\Models\ProductCategoryStyle;
 use App\Models\Context;
+use App\Models\CategoryStyle1;
+use App\Models\CategoryStyle2;
+use App\Service\CategoryService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 class ProductController extends Controller
@@ -149,7 +152,7 @@ class ProductController extends Controller
         $key = "product:$id";
         $expire = 3600;
         $product = Redis::get($key);
-        if(!$product){        
+        if(true){
             $product = Product::select("id",'name','txt','description','image','price','tags','taiwan_price')->find($id);
             $product = serialize([
                                     'attrib'    => $this->getProductAttrib($id), 
@@ -169,6 +172,7 @@ class ProductController extends Controller
                             ->where('product_id',$product_id)->get();
                             
         $result=[];
+        $cateService = new CategoryService();
         foreach([2=>'category_styles2',1=>'category_styles1'] as $key => $row){
             if($key==2  ){                
                 $res = DB::table('product_attributes')
@@ -184,15 +188,17 @@ class ProductController extends Controller
                             ->get();
                     $empty[] = 
                                 [
-                                    'id'=> $row->id ,
+                                    'id'=> $cateService->getStyleByName(2,$row->style2),
                                     'name' => $row->style2,
                                     'style'=>$category_styles,
+
                                 ];    
                 }
+
                 $result[] = $empty;
-            }else{
+            }elseif($key==1){
                 $res = DB::table('product_category_style')
-                    ->select( "{$row}.name", "{$row}.id")
+                    ->select( "{$row}.name", "{$row}.id" , 'category_styles_id')
                     ->join("{$row}",'product_category_style.category_styles_id', '=', "{$row}.id")
                     ->where([
                         'product_category_style.product_id' => $product_id,

@@ -3,13 +3,15 @@
 namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;  
 use Illuminate\Http\Request;
-use App\Models\Context;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
+use App\Models\Context;
+use App\Models\CategoryStyle1;
+use App\Models\CategoryStyle2;
 
 class OrderController extends Controller
 {   
@@ -46,9 +48,11 @@ class OrderController extends Controller
 			                "name" => $product->name ,
 			                "num" => $request->num ,
 			                "price" => $request->price ,
-			                "image" => $product->avatar ,
+			                "image" => $product->avatar ? $product->avatar :$product->image[0],
 			                "style1" => $style1 ,
+			                "style1_name" => self::getStyleName(1 , $style1) ,
 			                "style2" => $style2 ,
+			                "style2_name" => self::getStyleName(2 , $style2) ,
 			                "product_id" => $request->product_id 
 			            ];  
 			
@@ -65,17 +69,19 @@ class OrderController extends Controller
 	    			$cart[$user_id][$product_id][$p_key+1] = 
 			            [
 			                "name" => $product->name,
-			                "image" => $product->avatar,
+			                "image" => $product->avatar ? $product->avatar :$product->image[0],
 			                "num" => $request->num ,
 			                "price" => $request->price,			                
 			                "style1" => $style1 ,
+			                "style1_name" => self::getStyleName(1 , $style1) ,
 			                "style2" => $style2,
+			                "style2_name" => self::getStyleName(2 , $style2) ,
 			                "product_id" => $request->product_id 
 			            ]; 
 			    }  
 		    }      	
         }
-                
+        $tidyCart = $this->tidyCart($cart[$user_id]);
         Redis::set($user_key , json_encode($cart) );
         Redis::expire($user_key,$this->expire);
         return response()->json(
@@ -83,9 +89,41 @@ class OrderController extends Controller
         		'msg' => 'success Product added to cart successfully!', 
         		'state' => 1,
         		'cart' => $cart,
-        		'count' => count($cart[$user_id][$product_id])
+        		'count' => count($cart[$user_id][$product_id]),
+        		'tidyCart'=>$tidyCart
         	]
         );        
+    }
+
+    /**
+     * 取得產品類別
+     */ 
+    public function getStyleName(int $type ,int $id){
+    	$key = "style:{$type}:{$id}";
+    	$res = Redis::get($key);
+    	if($res){        		
+	    	return $res;
+	    }else{
+	    	if($type==1){   	    	
+	    		$res=CategoryStyle2::findOrFail($id); 
+	    	}elseif($type==2) {	    	
+	    		$res=CategoryStyle1::findOrFail($id);
+	    	}
+	    	Redis::set($key , $res->name);
+	        Redis::expire($key,$this->expire);
+	        return $res->name;	     	
+	    }
+    }
+
+    public function tidyCart($cartList){
+    	$emptyCart = [];
+    	foreach($cartList as $key1 => $items){
+    		foreach($items as $item){
+    			$emptyCart[] = $item;
+    		}
+    		
+    	}
+    	return $emptyCart;
     }
 
     /**
