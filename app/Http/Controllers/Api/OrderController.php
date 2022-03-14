@@ -38,25 +38,26 @@ class OrderController extends Controller
         $style1 = $request->style1;
 		$style2 = $request->style2;
 		$cart = Redis::get($user_key);
-		if($cart){
-			$cart = json_decode($cart,true);        	
-		}
-        if(!isset($cart[$user_id][$product_id])) {        	
+		
+        if(!isset($cart)) {
 			// 透過全域幫助函式...			         	
         	$cart[$user_id][$product_id][1] = 
 			            [
 			                "name" => $product->name ,
-			                "num" => $request->num ,
-			                "price" => $request->price ,
-			                "image" => $product->avatar ? $product->avatar :$product->image[0],
+			                "num" => $request->num,
 			                "style1" => $style1 ,
 			                "style1_name" => self::getStyleName(1 , $style1) ,
 			                "style2" => $style2 ,
 			                "style2_name" => self::getStyleName(2 , $style2) ,
+			                "image" => $product->avatar ? $product->avatar :$product->image[0],			                
+			                "price" => $request->price ,
 			                "product_id" => $request->product_id 
 			            ];  
 			
         } else {
+        	$cart = json_decode($cart,true);
+        	$flag = false;
+        	// 找全部 的ARRAY num 加上數量
         	foreach($cart[$user_id][$product_id] as $p_key => $product_row){        	
 	    		if(
 	    			$request->style1 == $cart[$user_id][$product_id][$p_key]["style1"] && 
@@ -64,22 +65,27 @@ class OrderController extends Controller
 	    			$request->product_id == $cart[$user_id][$product_id][$p_key]["product_id"] &&
 	    			$request->price == $cart[$user_id][$product_id][$p_key]["price"]        		
 	    		){        			
-	    			$cart[$user_id][$product_id][$p_key]['num']++;
-	    		}else{       
-	    			$cart[$user_id][$product_id][$p_key+1] = 
+	    			$cart[$user_id][$product_id][$p_key]['num'] += $request->num;
+	    			$flag = true;
+	    		}
+		    }
+
+		    if($flag == false){
+		    	$cartCount = count($cart[$user_id][$product_id])+1;
+		    	$cart[$user_id][$product_id][$cartCount] = 
 			            [
-			                "name" => $product->name,
-			                "image" => $product->avatar ? $product->avatar :$product->image[0],
-			                "num" => $request->num ,
-			                "price" => $request->price,			                
+			                "name" => $product->name ,
+			                "num" => $request->num,
 			                "style1" => $style1 ,
 			                "style1_name" => self::getStyleName(1 , $style1) ,
-			                "style2" => $style2,
+			                "style2" => $style2 ,
 			                "style2_name" => self::getStyleName(2 , $style2) ,
+			                "image" => $product->avatar ? $product->avatar :$product->image[0],			                
+			                "price" => $request->price ,
 			                "product_id" => $request->product_id 
 			            ]; 
-			    }  
-		    }      	
+		    }
+
         }
         $tidyCart = $this->tidyCart($cart[$user_id]);
         Redis::set($user_key , json_encode($cart) );
