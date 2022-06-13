@@ -23,6 +23,44 @@ class OrderController extends Controller
     }
 
     /**
+     * delete cart product
+     * Show the profile for the given user.
+     *
+     * @param  Request  $request     
+     * @return Response
+     */
+    public function delCartProduct(Request $request){    	
+        $product_id = $request->product_id;
+        $user_id = $request->user_id;        
+        $user_key = "cart:$user_id";
+        $style1 = $request->style1;
+		$style2 = $request->style2;
+		$cart = Redis::get($user_key);
+		$cart = json_decode($cart,true);
+        $flag = false;
+
+		foreach($cart[$user_id][$product_id] as $p_key => $product_row){        	
+    		if(
+    			$request->style1 == $cart[$user_id][$product_id][$p_key]["style1"] && 
+    			$request->style2 == $cart[$user_id][$product_id][$p_key]["style2"] &&
+    			$request->product_id == $cart[$user_id][$product_id][$p_key]["product_id"] 	
+    		){        			
+    			unset($cart[$user_id][$product_id][$p_key]);	    			
+    		}		
+		}
+		Redis::set($user_key , json_encode($cart) );
+        Redis::expire($user_key,$this->expire);        
+        return response()->json(
+        	[	        		
+        		'msg' => 'success Product added to cart successfully!', 
+        		'state' => 1,
+        		'cart' => $cart,
+        		'count' => count($cart[$user_id][$product_id]),
+        		'tidyCart'=>$this->tidyCart($cart[$user_id])
+        	]
+        );        
+    }
+    /**
      * 下單     
      * Show the profile for the given user.
      *

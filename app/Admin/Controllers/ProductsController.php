@@ -103,8 +103,8 @@ class ProductsController extends AdminController
             $f->text('content','備註');            
         });        
         
-        $form->textarea('txt', __('簡述'))->options(['lang' => 'fr', 'height' => 100]);
-        $form->selfMakeCkeditor('description', __('商品說明'))->options(['lang' => 'fr', 'height' => 100]);
+        $form->textarea('txt', __('簡述'))->options(['lang' => 'fr', 'height' => 200]);
+        $form->selfMakeCkeditor('description', __('商品說明'))->options(['lang' => 'fr', 'height' => 200]);
         $form->multipleImage('image', __('圖片'))->move('uploads/images')->removable();
 
         $form->saved(function (Form $form) {
