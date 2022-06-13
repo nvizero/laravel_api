@@ -11,7 +11,7 @@
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 <script src="https://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 
-<script src="//cdn.ckeditor.com/4.10.0/full/ckeditor.js"></script>
+<script src="/js/ckeditor.js"></script>
 @include('ckfinder::setup')
 <textarea id="editor1" name="editor1" cols="100" rows="300" name="update_context"></textarea>
 
